@@ -9,10 +9,10 @@
         .game-button {
             background-color: #4CAF50; /* Green */
             color: white;
-            padding: 15px 30px;
+            padding: 30px 30px;
             font-size: 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 100px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
@@ -32,9 +32,24 @@ background-size: 100% 100%;
 	h1 {
 	color: #000080;
 	}
+
+	.buttons {
+  display: flex; /* Arranges children (buttons) in a row */
+  justify-content: space-around;
+
+  align-items: center; /* Vertically centers buttons if they have different heights */
+  gap: 10px;
+}
+
+.buttons button {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  background-color: green;
+  cursor: pointer;
     </style>
 </head>
 <body>
+<div class="buttons">
     <h1>Amanda The Adventurer</h1>
 
     <!-- Button that redirects to the game -->
@@ -84,14 +99,21 @@ background-size: 100% 100%;
         Play Game
     </button>
 
-	                <h1>Slope</h1>
+	                <h1>SLOPE</h1>
 
     <!-- Button that redirects to the game -->
     <button class="game-button" onclick="window.location.href='slope.html';">
         Play Game
     </button>
-
+	</div>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
