@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Spotify Music Site</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #121212;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    button {
+      background: #1DB954;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #17a44b;
+    }
+
+    img {
+      border-radius: 10px;
+      margin-top: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    audio {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 My Spotify Music Site</h1>
+  <div id="content">
+    <button id="login">Log in with Spotify</button>
+  </div>
+
+  <script>
+    // ⚙️ CONFIGURATION
+    const clientId = "f941f731f6064663bcd5a4c9ea24745e"; // Replace with your Spotify Client ID
+    const redirectUri = "https://jl-games.netlify.app/music.html/"; // Replace with your deployed site URL
+    const scopes = "user-read-currently-playing user-read-playback-state";
+
+    // 🧩 Parse Access Token from URL (after login)
+    const hash = window.location.hash
+      .substring(1)
+      .split("&")
+      .reduce((acc, item) => {
+        if (item) {
+          const parts = item.split("=");
+          acc[parts[0]] = decodeURIComponent(parts[1]);
+        }
+        return acc;
+      }, {});
+
+    let token = hash.access_token;
+
+    // 🟢 Spotify Login Button
+    document.getElementById("login").addEventListener("click", () => {
+      const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&scope=${encodeURIComponent(scopes)}&response_type=token&show_dialog=true`;
+      window.location = authUrl;
+    });
+
+    // 🎵 Fetch the Current Song
+    async function getCurrentlyPlaying() {
+      const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      if (res.status === 204 || res.status > 400) {
+        document.getElementById("content").innerHTML = `
+          <p>😴 No music currently playing.<br>Start a song in Spotify and refresh!</p>
+        `;
+        return;
+      }
+
+      const data = await res.json();
+      const track = data.item;
+
+      document.getElementById("content").innerHTML = `
+        <h2>Now Playing:</h2>
+        <img src="${track.album.images[0].url}" width="250" alt="Album cover">
+        <h3>${track.name}</h3>
+        <p>${track.artists.map(a => a.name).join(", ")}</p>
+        ${track.preview_url 
+          ? `<audio controls src="${track.preview_url}"></audio>` 
+          : `<p>(No preview available)</p>`}
+        <br><br>
+        <button onclick="location.reload()">Refresh</button>
+      `;
+    }
+
+    if (token) {
+      getCurrentlyPlaying();
+    }
+  </script>
+</body>
+</html>
